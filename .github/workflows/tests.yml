@@ -4,7 +4,6 @@
 name: Tests
 
 on:
-  pull_request:
   push:
     branches:
       - master
@@ -12,11 +11,16 @@ on:
     paths:
       - 'src/**'
       - 'test/**'
-      - 'share/**'
       - 'doc/examples/**'
       - 'doc/scripts/**'
-      - '.github/workflows/**'
-      - 'ci/**'
+      - '.github/workflows/tests.yml'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'test/**'
+      - 'doc/examples/**'
+      - 'doc/scripts/**'
+      - '.github/workflows/tests.yml'
 
 defaults:
   run:
@@ -126,18 +130,18 @@ jobs:
         with:
           workflow: ci-caches.yml
           name: gmt-cache
-          path: .gmt
-
-      # Pull baseline image data from dvc remote (DAGsHub)
-      - name: Pull baseline image data from dvc remote
-        run: dvc pull
+          path: gmt-cache
 
       # Move downloaded files to ~/.gmt directory and list them
       - name: Move and list downloaded remote files
         run: |
-          mkdir -p ~/.gmt
-          mv .gmt/* ~/.gmt
-          ls -lRh ~/.gmt
+          mkdir -p ~/.gmt/static/
+          mv gmt-cache/* ~/.gmt/static/
+          ls -lRh ~/.gmt/static/
+
+      # Pull baseline image data from dvc remote (DAGsHub)
+      - name: Pull baseline image data from dvc remote
+        run: dvc pull
 
       - name: Install GMT
         run: |
@@ -184,7 +188,7 @@ jobs:
         if: failure()
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4.1.1
+        uses: codecov/codecov-action@v4.2.0
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:

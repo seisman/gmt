@@ -9,12 +9,17 @@ on:
       - master
       - 6.[0-9]+
     paths:
-      - 'src/**'
+      - 'ci/**'
       - 'cmake/**'
+      - 'src/**'
       - '**/CMakeLists.txt'
       - '.github/workflows/docker.yml'
   pull_request:
     paths:
+      - 'ci/**'
+      - 'cmake/**'
+      - 'src/**'
+      - '**/CMakeLists.txt'
       - '.github/workflows/docker.yml'
 
 defaults:
@@ -113,14 +118,14 @@ jobs:
         with:
           workflow: ci-caches.yml
           name: gmt-cache
-          path: .gmt
+          path: gmt-cache
 
       # Move downloaded files to ~/.gmt directory and list them
       - name: Move and list downloaded remote files
         run: |
-          mkdir -p ~/.gmt
-          mv .gmt/* ~/.gmt
-          ls -lRh ~/.gmt
+          mkdir -p ~/.gmt/static/
+          mv gmt-cache/* ~/.gmt/static/
+          ls -lRh ~/.gmt/static/
 
       - name: Check a few simple commands
         run: bash ci/simple-gmt-tests.sh
